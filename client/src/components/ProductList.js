@@ -1,32 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function ProductList() {
-  // Datos de prueba (reemplazar con datos del servidor)
-  const products = [
-    {
-      id: 1,
-      name: 'ELES',
-      price: 25.99,
-      image: '/images/eles.jpg',
-      description: 'Juego de encastre de madera.'
-    },
-    {
-      id: 2,
-      name: 'Bloques Arco Iris',
-      price: 39.99,
-      image: '/images/bloques_arco_iris.jpg',
-      description: 'Bloques de construcción de madera.'
-    },
-    {
-      id: 3,
-      name: 'Camionetas y Autitos',
-      price: 29.99,
-      image: '/images/camionetas_y_autitos.jpg',
-      description: 'Vehículos de madera.'
-    },
-    // ... Agrega más productos de tu catálogo
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Obtener los productos del servidor
+    fetch('/api/products')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error al obtener los productos');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div>Cargando productos...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -39,7 +44,7 @@ function ProductList() {
                 src={product.image}
                 className="card-img-top"
                 alt={product.name}
-                style={{ objectFit: 'cover', height: '200px' }} // Ajusta la altura de la imagen
+                style={{ objectFit: 'cover', height: '200px' }}
               />
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{product.name}</h5>
