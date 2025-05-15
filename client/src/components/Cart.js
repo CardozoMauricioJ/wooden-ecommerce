@@ -1,28 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useCart } from '../context/CartContext';
+import { Link } from 'react-router-dom'; // Importa Link
 
 function Cart() {
-  // Datos de prueba del carrito (reemplazar con la lógica real del carrito)
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: 'ELES', price: 25.99, quantity: 2 },
-    { id: 2, name: 'Bloques Arco Iris', price: 39.99, quantity: 1 },
-  ]);
-
-  const handleQuantityChange = (id, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: parseInt(quantity) } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
-
-  const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const { cartItems, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
 
   return (
     <div>
@@ -51,17 +32,15 @@ function Cart() {
                       type="number"
                       value={item.quantity}
                       min="1"
-                      onChange={(e) =>
-                        handleQuantityChange(item.id, e.target.value)
-                      }
+                      onChange={(e) => updateQuantity(item.id, e.target.value)}
                       className="form-control"
                     />
                   </td>
-                  <td>${item.price * item.quantity}</td>
+                  <td>${(item.price * item.quantity).toFixed(2)}</td>
                   <td>
                     <button
                       className="btn btn-danger btn-sm"
-                      onClick={() => handleRemoveItem(item.id)}
+                      onClick={() => removeFromCart(item.id)}
                     >
                       Eliminar
                     </button>
@@ -71,7 +50,12 @@ function Cart() {
             </tbody>
           </table>
           <h4>Total: ${totalPrice.toFixed(2)}</h4>
-          <button className="btn btn-success">Finalizar Compra</button>
+          <button className="btn btn-danger" onClick={clearCart}>
+            Vaciar Carrito
+          </button>
+          <Link to="/checkout" className="btn btn-success">
+            Finalizar Compra
+          </Link>
         </div>
       )}
     </div>
