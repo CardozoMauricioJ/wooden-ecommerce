@@ -2,41 +2,21 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 5000;
+const mysql = require('mysql2');
 
 // Middleware para analizar el cuerpo de las solicitudes (para POST, PUT, etc.)
 app.use(express.json());
 
-// Datos de prueba (simulando la base de datos)
-const products = [
-  {
-    id: 1,
-    name: 'ELES',
-    price: 25.99,
-    image: '/images/eles.jpg',
-    description:
-      'Juego de encastre de madera. Ideal para desarrollar la motricidad fina y la coordinación mano-ojo.',
-    details:
-      'Contiene 12 piezas de diferentes formas y colores. Fabricado con madera de pino y pinturas no tóxicas.',
-  },
-  {
-    id: 2,
-    name: 'Bloques Arco Iris',
-    price: 39.99,
-    image: '/images/bloques_arco_iris.jpg',
-    description: 'Bloques de construcción de madera para estimular la imaginación.',
-    details:
-      'Incluye 36 bloques de diferentes tamaños y colores. Madera de haya y tintes naturales.',
-  },
-  {
-    id: 3,
-    name: 'Camionetas y Autitos',
-    price: 29.99,
-    image: '/images/camionetas_y_autitos.jpg',
-    description: 'Vehículos de madera.',
-    details: 'Set de 4 camionetas y autitos de madera.',
-  },
-  // ... Agrega más productos de tu catálogo
-];
+// Datos de prueba 
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'wooden_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
 // Rutas de la API (simuladas)
 app.get('/api/products', (req, res) => {
